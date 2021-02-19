@@ -14,6 +14,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -24,7 +25,7 @@ public class TrelloClient {
     private final RestTemplate restTemplate;
     private final TrelloConfig trelloConfig;
 
-    private URI getURL() {
+    public List<TrelloBoardDto> getTrelloBoards() {
         URI url = UriComponentsBuilder.fromHttpUrl(trelloConfig.getTrelloApiEndpoint() + "/members/" + trelloConfig.getTrelloUser() + "/boards")
                 .queryParam("key", trelloConfig.getTrelloAppKey())
                 .queryParam("token", trelloConfig.getTrelloToken())
@@ -33,21 +34,18 @@ public class TrelloClient {
                 .build()
                 .encode()
                 .toUri();
-        return url;
-    }
-
-    public List<TrelloBoardDto> getTrelloBoards() {
 
         try {
-            TrelloBoardDto[] boardsResponse = restTemplate.getForObject(getURL(), TrelloBoardDto[].class);
-            return Optional.ofNullable(boardsResponse).map(arr-> { for(TrelloBoardDto t: arr) {
-                if(t.getName()!="" && t.getId()!=null) {
-                    return t;
-                } }
-                return null;
-            }).map(Arrays::asList).orElse(Collections.emptyList());
+            TrelloBoardDto[] boardsResponse = restTemplate.getForObject(url, TrelloBoardDto[].class);
+            return Optional.ofNullable(boardsResponse)
+                    .map(Arrays::asList)
+                    .orElse(Collections.emptyList())
+                    .stream()
+                    .filter(p -> Objects.nonNull(p.getId()) && Objects.nonNull(p.getName()))
+                    .filter(p -> p.getName().contains("Kodilla"))
+                    .collect(Collectors.toList());
         } catch (RestClientException e) {
-            LOGGER.error(e.getMessage(),e);
+            LOGGER.error(e.getMessage(), e);
             return Collections.emptyList();
         }
     }
@@ -57,7 +55,7 @@ public class TrelloClient {
                 .queryParam("key", trelloConfig.getTrelloAppKey())
                 .queryParam("token", trelloConfig.getTrelloToken())
                 .queryParam("name", trelloCardDto.getName())
-                .queryParam("desc", trelloCardDto.getDescription())
+                .queryParam("description", trelloCardDto.getDescription())
                 .queryParam("pos", trelloCardDto.getPos())
                 .queryParam("idList", trelloCardDto.getIdList())
                 .build()
