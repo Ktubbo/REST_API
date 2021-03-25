@@ -69,6 +69,7 @@ class TrelloMapperTestSuite {
 
         //Then
         assertEquals(trelloBoardDtoList.get(1).getId(),"2");
+        assertEquals(trelloBoardDtoList.get(0).getName(),"New Board");
         assertEquals(trelloBoardDtoList.get(0).getLists().get(1).getName(),"In Progress");
         assertTrue(trelloBoardDtoList.get(1).getLists().get(0).isClosed());
     }
@@ -125,8 +126,10 @@ class TrelloMapperTestSuite {
         TrelloCardDto trelloCardDto = trelloMapper.mapToCardDto(trelloCard);
 
         //Then
+        assertEquals(trelloCardDto.getPos(),"Center");
         assertEquals(trelloCardDto.getName(),"new Trello Card");
         assertEquals(trelloCardDto.getIdList(),"7");
+        assertEquals(trelloCardDto.getDescription(),"some new Card");
     }
 
     @Test
@@ -139,7 +142,9 @@ class TrelloMapperTestSuite {
         TrelloCard trelloCard = trelloMapper.mapToCard(trelloCardDto);
 
         //Then
+        assertEquals(trelloCard.getName(),"new Trello Dto Card");
         assertEquals(trelloCard.getListId(),"9");
         assertEquals(trelloCard.getDescription(),"some new Dto Card");
+        assertEquals(trelloCard.getPos(),"Right");
     }
 }

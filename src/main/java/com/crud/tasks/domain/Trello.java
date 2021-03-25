@@ -2,15 +2,17 @@ package com.crud.tasks.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-@Data
+@Getter
+@AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Trello {
 
     @JsonProperty("board")
-    int board;
+    public int board;
 
     @JsonProperty("card")
-    int card;
+    public int card;
 }

@@ -32,4 +32,10 @@ public class TaskMapper {
                 .collect(Collectors.toList());
     }
 
+    public List<Task> mapToTaskList(final List<TaskDto> taskDtoList) {
+        return taskDtoList.stream()
+                .map(this::mapToTask)
+                .collect(Collectors.toList());
+    }
+
 }
